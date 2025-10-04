@@ -89,7 +89,7 @@ for i in range(5):
 
 #4.6 Developing random forest model
 from sklearn.ensemble import RandomForestRegressor
-mdl3 = RandomForestRegressor(n_estimators=50, random_state=42)
+mdl3 = RandomForestRegressor(n_estimators=10, random_state=42)
 mdl3.fit(X_train, y_train)
 y_pred_train3 = mdl3.predict(X_train)
 for i in range(5):
@@ -241,21 +241,91 @@ print("Best CV MAE:", -gridRND.best_score_)
 print("Best params:", gridRND.best_params_)
 y_predRND = gridRND.predict(X_test)
 print("Test MAE:", mean_absolute_error(y_test, y_predRND))
+
+
 #Step 5: Model Performance Analysis
 
+#5.1 Linear regression analysis
+clf1 = Pipeline([
+    ("scaler", StandardScaler()),
+    ("clf", LinearRegression())])
+clf1.fit(X_train, y_train)
+print("Training accuracy:", clf1.score(X_train, y_train))
+print("Test accuracy:", clf1.score(X_test, y_test))
 
-# #5.1 MAE for first model
-# mae_train1 = mean_absolute_error(y_pred_train1, y_train)
-# print("Model 1 training MAE is: ", round(mae_train1,2))
+# Evaluate the classifier using various metrics
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
 
-# #5.2 MAE for the second model
-# mae_train2 = mean_absolute_error(y_pred_train2, y_train)
-# print("Model 2 training MAE is: ", round(mae_train2,2))
+#rounding prediction matrix (why do we do this?)
+y_pred_clf1 = np.round(clf1.predict(X_test))
+cm_clf1 = confusion_matrix(y_test, y_pred_clf1)
+print("Confusion Matrix:")
+print(cm_clf1)
+precision_clf1 = precision_score(y_test, y_pred_clf1, average='micro')
+recall_clf1 = recall_score(y_test, y_pred_clf1, average='micro')
+f1_clf1 = f1_score(y_test, y_pred_clf1, average='micro')
+print("Precision:", precision_clf1)
+print("Recall:", recall_clf1)
+print("F1 Score:", f1_clf1)
 
-# #5.3 MAE for the third model
-# mae_train3 = mean_absolute_error(y_pred_train3, y_train)
-# print("Model 3 training MAE is: ", round(mae_train3,2))
 
-# #5.3 MAE for the fourth model
-# mae_train4 = mean_absolute_error(y_pred_train4, y_train)
-# print("Model 4 training MAE is: ", round(mae_train4,2))
+#5.2 logisitic regression analysis
+
+clf2 = Pipeline([
+    ("scaler", StandardScaler()),
+    ("clf", LogisticRegression(max_iter=1000, random_state=42))
+])
+clf2.fit(X_train, y_train)
+print("Training accuracy:", clf2.score(X_train, y_train))
+print("Test accuracy:", clf2.score(X_test, y_test))
+
+
+y_pred_clf2 = clf2.predict(X_test)
+cm_clf2 = confusion_matrix(y_test, y_pred_clf2)
+print("Confusion Matrix:")
+print(cm_clf2)
+precision_clf2 = precision_score(y_test, y_pred_clf2, average='micro')
+recall_clf2 = recall_score(y_test, y_pred_clf2, average='micro')
+f1_clf2 = f1_score(y_test, y_pred_clf2, average='micro')
+print("Precision:", precision_clf2)
+print("Recall:", recall_clf2)
+print("F1 Score:", f1_clf2)
+
+
+#5.3 random forest analysis
+
+from sklearn.ensemble import RandomForestClassifier
+clf3 = RandomForestClassifier(n_estimators=10, random_state=42)
+clf3.fit(X_train, y_train)
+print("RF Training accuracy:", clf3.score(X_train, y_train))
+print("RF Test accuracy:", clf3.score(X_test, y_test))
+
+y_pred_clf3 = clf3.predict(X_test)
+cm_clf3 = confusion_matrix(y_test, y_pred_clf3)
+print("RF Confusion Matrix:")
+print(cm_clf3)
+precision_clf3 = precision_score(y_test, y_pred_clf3, average='micro')
+recall_clf3 = recall_score(y_test, y_pred_clf3, average='micro')
+f1_clf3 = f1_score(y_test, y_pred_clf3, average='micro')
+print("RF Precision:", precision_clf3)
+print("RF Recall:", recall_clf3)
+print("RF F1 Score:", f1_clf3)
+
+#5.4 decision tree analysis
+
+from sklearn.tree import DecisionTreeClassifier
+clf4 = DecisionTreeClassifier(max_depth=4, random_state=42)
+clf4.fit(X_train, y_train)
+print("DT Training accuracy:", clf4.score(X_train, y_train))
+print("DT Test accuracy:", clf4.score(X_test, y_test))
+
+y_pred_clf4 = clf4.predict(X_test)
+cm_clf4 = confusion_matrix(y_test, y_pred_clf4)
+print("DT Confusion Matrix:")
+print(cm_clf4)
+precision_clf4 = precision_score(y_test, y_pred_clf4, average='micro')
+recall_clf4 = recall_score(y_test, y_pred_clf4, average='micro')
+f1_clf4 = f1_score(y_test, y_pred_clf4, average='micro')
+print("DT Precision:", precision_clf4)
+print("DT Recall:", recall_clf4)
+print("DT F1 Score:", f1_clf4)
