@@ -329,3 +329,37 @@ f1_clf4 = f1_score(y_test, y_pred_clf4, average='micro')
 print("DT Precision:", precision_clf4)
 print("DT Recall:", recall_clf4)
 print("DT F1 Score:", f1_clf4)
+
+#Step 6: Stacked Model Performance
+from sklearn.ensemble import StackingClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.svm import LinearSVC
+estimators = [
+    ('rf', mdl3),
+    ('svr', make_pipeline(StandardScaler(),
+                          LinearSVC(random_state=42)))
+]
+
+clf5 = StackingClassifier(
+    estimators=estimators, final_estimator=LogisticRegression(max_iter=1000, random_state=42)
+)
+
+clf5.fit(X_train, y_train)
+print("SC Training accuracy:", clf5.score(X_train, y_train))
+print("SC Test accuracy:", clf5.score(X_test, y_test))
+
+y_pred_clf5 = clf5.predict(X_test)
+cm_clf5 = confusion_matrix(y_test, y_pred_clf5)
+print("SC Confusion Matrix:")
+print(cm_clf5)
+precision_clf5 = precision_score(y_test, y_pred_clf5, average='micro')
+recall_clf5 = recall_score(y_test, y_pred_clf5, average='micro')
+f1_clf5 = f1_score(y_test, y_pred_clf5, average='micro')
+print("SC Precision:", precision_clf5)
+print("SC Recall:", recall_clf5)
+print("SC F1 Score:", f1_clf5)
+
+#Step 7: Model Evaluation (random forest)
+import joblib
+
+joblib.dump(clf5, "Project1_F2025.joblib")
