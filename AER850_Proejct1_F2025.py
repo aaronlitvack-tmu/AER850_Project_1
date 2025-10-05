@@ -33,8 +33,8 @@ from sklearn.model_selection import StratifiedShuffleSplit
 #4.1 data split into training and testing blocks
 
 data["step_categories"] = pd.cut(data["Step"],
-                          bins=[0, 2, 4, 6, 8, 10, 12, np.inf],
-                          labels=[1, 2, 3, 4, 5, 6, 7])
+                          bins=[0, 6, 10, np.inf],
+                          labels=[1, 2, 3])
 my_splitter = StratifiedShuffleSplit(n_splits = 1,
                                test_size = 0.2,
                                random_state = 42)
@@ -181,35 +181,110 @@ y_pred_test4 = pipeline4.predict(X_test)
 mae_test4 = mean_absolute_error(y_test, y_pred_test4)
 print("Model 4 Test MAE:", round(mae_test4, 2))
 
-#4.8 cross validation for random forest
+#4.8 cross validation for linear regression
 from sklearn.model_selection import GridSearchCV, KFold
-param_grid = {
+param_grid1 = {
+    'model__copy_X': [True,False],
+    'model__fit_intercept': [True,False],
+    'model__n_jobs': [1,5,10,15,None], 
+    'model__positive': [True,False]
+}
+cv1 = KFold(n_splits=5, shuffle=True, random_state=42)
+grid1 = GridSearchCV(
+    estimator=pipeline1,
+    param_grid=param_grid1,
+    scoring='neg_mean_absolute_error',
+    cv=cv1,
+    n_jobs=-1,
+    refit=True,           
+    verbose=1,
+    return_train_score=True
+)
+grid1.fit(X_train, y_train)
+
+print("Best CV MAE:", -grid1.best_score_)
+print("Best params:", grid1.best_params_)
+y_pred1 = grid1.predict(X_test)
+print("Test MAE:", mean_absolute_error(y_test, y_pred1))
+
+#4.9 cross validation for logistic regression
+param_grid2 = {
+    'model__penalty':['l1','l2','elasticnet','none'],
+    'model__C' : np.logspace(-4,4,20),
+    'model__solver': ['lbfgs','newton-cg','liblinear','sag','saga'],
+}
+cv2 = KFold(n_splits=5, shuffle=True, random_state=42)
+grid2 = GridSearchCV(
+    estimator=pipeline2,
+    param_grid=param_grid2,
+    scoring='neg_mean_absolute_error',
+    cv=cv2,
+    n_jobs=-1,
+    refit=True,           
+    verbose=1,
+    return_train_score=True
+)
+grid2.fit(X_train, y_train)
+
+print("Best CV MAE:", -grid2.best_score_)
+print("Best params:", grid2.best_params_)
+y_pred2 = grid2.predict(X_test)
+print("Test MAE:", mean_absolute_error(y_test, y_pred2))
+
+#4.10 cross validation for random forest
+param_grid3 = {
     'model__n_estimators': [10, 30, 50],
     'model__max_depth': [None, 10, 20, 30],
     'model__min_samples_split': [2, 5, 10],
     'model__min_samples_leaf': [1, 2, 4],
     'model__max_features': ['sqrt', 'log2'],
 }
-cv = KFold(n_splits=5, shuffle=True, random_state=42)
-grid = GridSearchCV(
+cv3 = KFold(n_splits=5, shuffle=True, random_state=42)
+grid3 = GridSearchCV(
     estimator=pipeline3,
-    param_grid=param_grid,
+    param_grid=param_grid3,
     scoring='neg_mean_absolute_error',
-    cv=cv,
+    cv=cv3,
     n_jobs=-1,
     refit=True,           
     verbose=1,
     return_train_score=True
 )
-grid.fit(X_train, y_train)
+grid3.fit(X_train, y_train)
 
-print("Best CV MAE:", -grid.best_score_)
-print("Best params:", grid.best_params_)
-y_pred = grid.predict(X_test)
-print("Test MAE:", mean_absolute_error(y_test, y_pred))
+print("Best CV MAE:", -grid3.best_score_)
+print("Best params:", grid3.best_params_)
+y_pred3 = grid3.predict(X_test)
+print("Test MAE:", mean_absolute_error(y_test, y_pred3))
+
+#4.11 cross validation for decision tree
+param_grid4 = {
+    'model__n_estimators': [10, 30, 50],
+    'model__max_depth': [None, 10, 20, 30],
+    'model__min_samples_split': [2, 5, 10],
+    'model__min_samples_leaf': [1, 2, 4],
+    'model__max_features': ['sqrt', 'log2'],
+}
+cv4 = KFold(n_splits=5, shuffle=True, random_state=42)
+grid4 = GridSearchCV(
+    estimator=pipeline3,
+    param_grid=param_grid3,
+    scoring='neg_mean_absolute_error',
+    cv=cv4,
+    n_jobs=-1,
+    refit=True,           
+    verbose=1,
+    return_train_score=True
+)
+grid4.fit(X_train, y_train)
+
+print("Best CV MAE:", -grid3.best_score_)
+print("Best params:", grid3.best_params_)
+y_pred4 = grid3.predict(X_test)
+print("Test MAE:", mean_absolute_error(y_test, y_pred4))
 
 
-#4.9 cross validation for random forest using RandomizedSearchCV
+#4.12 cross validation for random forest using RandomizedSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 
 paramRND_grid = {
@@ -224,7 +299,7 @@ gridRND = RandomizedSearchCV(
     estimator=pipeline3,
     param_distributions=paramRND_grid,
     scoring='neg_mean_absolute_error',
-    cv=cv,
+    cv=cvRND,
     n_jobs=-1,
     refit=True,           
     verbose=1,
