@@ -54,23 +54,17 @@ print(np.abs(y_train.corr(X_train['X'])))
 print(np.abs(y_train.corr(X_train['Y'])))
 print(np.abs(y_train.corr(X_train['Z'])))
 
-#4.3 drop low corrlation variables from dataset
-# X_train = X_train.drop(columns=['Y'])
-# X_train = X_train.drop(columns=['Z'])
-# X_test = X_test.drop(columns=['Y'])
-# X_test = X_test.drop(columns=['Z'])
 
+#4.3 Scale the data
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+sc.fit(X_train.values)
 
-#4.4 Scale the data
-# from sklearn.preprocessing import StandardScaler
-# sc = StandardScaler()
-# sc.fit(X_train)
+pd.DataFrame(X_train).to_csv("UnscaledOriginalData.csv")
+X_train = sc.transform(X_train)
+pd.DataFrame(X_train).to_csv("NowScaledData.csv")
 
-# pd.DataFrame(X_train).to_csv("UnscaledOriginalData.csv")
-# X_train = sc.transform(X_train)
-# pd.DataFrame(X_train).to_csv("NowScaledData.csv")
-
-# X_test = sc.transform(X_test)
+X_test = sc.transform(X_test)
 
 #4.4 Developing linear regression model
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -142,7 +136,6 @@ pipeline1.fit(X_train, y_train)
 y_pred_test1 = pipeline1.predict(X_test)
 mae_test1 = mean_absolute_error(y_test, y_pred_test1)
 print("Model 1 Test MAE:", round(mae_test1, 2))
-
 
 
 pipeline2 = Pipeline([
@@ -362,7 +355,15 @@ print("SC Precision:", precision_clf5)
 print("SC Recall:", recall_clf5)
 print("SC F1 Score:", f1_clf5)
 
-#Step 7: Model Evaluation (random forest)
+#Step 7: Model Evaluation
 import joblib
 
 joblib.dump(clf5, "Project1_F2025.joblib")
+
+loaded_clf = joblib.load("Project1_F2025.joblib")
+
+testdata = np.array([[9.375,3.0625,1.51], [6.995,5.125,0.3875], [0,3.0625,1.93], [9.4,3,1.8], [9.4,3,1.3]])
+
+testdata = sc.transform(testdata)
+predictions = loaded_clf.predict(testdata)
+print(predictions)
