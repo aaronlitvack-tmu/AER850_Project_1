@@ -212,6 +212,7 @@ param_grid2 = {
     'model__penalty':['l1','l2','elasticnet','none'],
     'model__C' : np.logspace(-4,4,20),
     'model__solver': ['lbfgs','newton-cg','liblinear','sag','saga'],
+    'model__max_iter'  : [11]
 }
 cv2 = KFold(n_splits=5, shuffle=True, random_state=42)
 grid2 = GridSearchCV(
