@@ -31,9 +31,10 @@ sns.heatmap(masked_corr_matrix)
 from sklearn.model_selection import StratifiedShuffleSplit
 
 #4.1 data split into training and testing blocks
-data["step_categories"] = pd.cut(data["Y"],
-                          bins=[0, 2, 4, 6, np.inf],
-                          labels=[1, 2, 3, 4])
+
+data["step_categories"] = pd.cut(data["Step"],
+                          bins=[0, 2, 4, 6, 8, 10, 12, np.inf],
+                          labels=[1, 2, 3, 4, 5, 6, 7])
 my_splitter = StratifiedShuffleSplit(n_splits = 1,
                                test_size = 0.2,
                                random_state = 42)
@@ -54,21 +55,22 @@ print(np.abs(y_train.corr(X_train['Y'])))
 print(np.abs(y_train.corr(X_train['Z'])))
 
 #4.3 drop low corrlation variables from dataset
-X_train = X_train.drop(columns=['Y'])
-X_train = X_train.drop(columns=['Z'])
-X_test = X_test.drop(columns=['Y'])
-X_test = X_test.drop(columns=['Z'])
+# X_train = X_train.drop(columns=['Y'])
+# X_train = X_train.drop(columns=['Z'])
+# X_test = X_test.drop(columns=['Y'])
+# X_test = X_test.drop(columns=['Z'])
+
 
 #4.4 Scale the data
-from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-sc.fit(X_train)
+# from sklearn.preprocessing import StandardScaler
+# sc = StandardScaler()
+# sc.fit(X_train)
 
-pd.DataFrame(X_train).to_csv("UnscaledOriginalData.csv")
-X_train = sc.transform(X_train)
-pd.DataFrame(X_train).to_csv("NowScaledData.csv")
+# pd.DataFrame(X_train).to_csv("UnscaledOriginalData.csv")
+# X_train = sc.transform(X_train)
+# pd.DataFrame(X_train).to_csv("NowScaledData.csv")
 
-X_test = sc.transform(X_test)
+# X_test = sc.transform(X_test)
 
 #4.4 Developing linear regression model
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -235,6 +237,7 @@ gridRND = RandomizedSearchCV(
     verbose=1,
     return_train_score=True
 )
+
 gridRND.fit(X_train, y_train)
 
 print("Best CV MAE:", -gridRND.best_score_)
