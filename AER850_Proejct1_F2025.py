@@ -207,30 +207,30 @@ print("Best params:", grid1.best_params_)
 y_pred1 = grid1.predict(X_test)
 print("Test MAE:", mean_absolute_error(y_test, y_pred1))
 
-#4.9 cross validation for logistic regression
-param_grid2 = {
-    'model__penalty':['l1','l2','elasticnet','none'],
-    'model__C' : np.logspace(-4,4,20),
-    'model__solver': ['lbfgs','newton-cg','liblinear','sag','saga'],
-    'model__max_iter'  : [11]
-}
-cv2 = KFold(n_splits=5, shuffle=True, random_state=42)
-grid2 = GridSearchCV(
-    estimator=pipeline2,
-    param_grid=param_grid2,
-    scoring='neg_mean_absolute_error',
-    cv=cv2,
-    n_jobs=-1,
-    refit=True,           
-    verbose=1,
-    return_train_score=True
-)
-grid2.fit(X_train, y_train)
+#4.9 cross validation for logistic regression, ITERATION PROBLEMS, RUNNING GUMS UP CONSOLE
+# param_grid2 = {
+#     'model__penalty':['l1','l2','elasticnet','none'],
+#     'model__C' : np.logspace(-4,4,20),
+#     'model__solver': ['lbfgs','newton-cg','liblinear','sag','saga'],
+#     'model__max_iter'  : [100, 1000, 2500, 5000]
+# }
+# cv2 = KFold(n_splits=5, shuffle=True, random_state=42)
+# grid2 = GridSearchCV(
+#     estimator=pipeline2,
+#     param_grid=param_grid2,
+#     scoring='neg_mean_absolute_error',
+#     cv=cv2,
+#     n_jobs=-1,
+#     refit=True,           
+#     verbose=1,
+#     return_train_score=True
+# )
+# grid2.fit(X_train, y_train)
 
-print("Best CV MAE:", -grid2.best_score_)
-print("Best params:", grid2.best_params_)
-y_pred2 = grid2.predict(X_test)
-print("Test MAE:", mean_absolute_error(y_test, y_pred2))
+# print("Best CV MAE:", -grid2.best_score_)
+# print("Best params:", grid2.best_params_)
+# y_pred2 = grid2.predict(X_test)
+# print("Test MAE:", mean_absolute_error(y_test, y_pred2))
 
 #4.10 cross validation for random forest
 param_grid3 = {
